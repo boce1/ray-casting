@@ -12,7 +12,7 @@ void initizlizeRays(std::vector<line> &lineRays, unsigned int *linesCount, int *
 void drawRays(SDL_Renderer* renderer, const std::vector<line> lineRays);
 void drawWalls(SDL_Renderer* renderer, const std::vector<line> walls);
 void drawScene(SDL_Renderer* renderer, const std::vector<line> lineRays, const std::vector<line> walls);
-void detectCollision(std::vector<line> &lineRays, std::vector<line> &walls);
+void detectCollision(SDL_Renderer* renderer, std::vector<line> &lineRays, std::vector<line> &walls);
 bool areParallel(const line ray, const line wall);
 
 int main(int argc, char* argv[]) 
@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
 
-    unsigned int linesCount = 60;
+    unsigned int linesCount = 120;
     std::vector<line> rayLines;
 
     std::vector<line> walls; 
@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
         SDL_GetMouseState(&mouse_x, &mouse_y);
         //std::cout << mouse_x << " " << mouse_y << std::endl;
         initizlizeRays(rayLines, &linesCount, &mouse_x, &mouse_y);
-        detectCollision(rayLines, walls);
+        detectCollision(renderer, rayLines, walls);
         drawScene(renderer, rayLines, walls);
         rayLines.clear();
     
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
 void initizlizeRays(std::vector<line> &lineRays, unsigned int *linesCount, int *mouse_x, int *mouse_y)
 {
     int step = 360 / (*linesCount);
-    unsigned int rayLenght = 200;
+    unsigned int rayLenght = 500;
     for(int i = 0; i < (*linesCount); i++)
     {
         lineRays.push_back(line(*mouse_x, *mouse_y, (*mouse_x) + rayLenght * cos(i * step * PI / 180), (*mouse_y) + rayLenght * sin(i * step * PI / 180)));
@@ -102,7 +102,7 @@ void drawScene(SDL_Renderer* renderer, const std::vector<line> lineRays, const s
     SDL_RenderPresent(renderer);
 }
 
-void detectCollision(std::vector<line> &lineRays, std::vector<line> &walls)
+void detectCollision(SDL_Renderer* renderer, std::vector<line> &lineRays, std::vector<line> &walls)
 {
     float t_w;
     int new_x, new_y;
@@ -112,22 +112,26 @@ void detectCollision(std::vector<line> &lineRays, std::vector<line> &walls)
         {
             if(!areParallel(ray, wall))
             {
-                //t_w = (float)(ray.vector_x_component * wall.y1 - ray.vector_x_component * ray.y1 - wall.x1 + ray.x1) / 
-                //                                    (float)(wall.vector_x_component * ray.vector_y_component - ray.vector_x_component * wall.vector_y_component);
                 t_w = (float)(wall.y2 * ray.vector_x_component - ray.y2 * ray.vector_x_component - wall.x2 * ray.vector_y_component + ray.x2 * ray.vector_y_component) /
                                     (float)(wall.vector_x_component * ray.vector_y_component - wall.vector_y_component * ray.vector_x_component);
                 new_x = (int)(wall.x2 + t_w * wall.vector_x_component);
                 new_y = (int)(wall.y2 + t_w * wall.vector_y_component);
                 
-                if(wall.x1 <= new_x && new_x <= wall.x2 && wall.y1 <= new_y && new_y <= wall.y2)
+                if(wall.x1 <= new_x && new_x <= wall.x2 && wall.y1 <= new_y && new_y <= wall.y2 &&
+                        std::fabs(ray.vector_x_component) >= std::fabs(new_x - ray.x1) && std::fabs(ray.vector_y_component) >= std::fabs(new_y - ray.y1))
                 {
-                    ray.x2 = new_x;
-                    ray.y2 = new_y;
-                    std::cout << " " << ray.x2 << " " << ray.y2 << std::endl;
+                    
+                    lineRays.push_back(line(lineRays[0].x1, lineRays[0].y1, new_x, new_y));
+                    
+                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                    SDL_RenderDrawLine(renderer, ray.x1, ray.y1, new_x, new_y);
+                    SDL_RenderPresent(renderer);
+                    // std::cout << " " << ray.x2 << " " << ray.y2 << std::endl;
                 }
             }
         }
     }
+
 }
 
 bool areParallel(const line ray, const line wall)
@@ -135,7 +139,7 @@ bool areParallel(const line ray, const line wall)
     float xCoef = (float)ray.vector_x_component / (float)wall.vector_x_component;
     float yCoef = (float)ray.vector_y_component / (float)wall.vector_y_component;
     //std::cout << xCoef << " " << yCoef << std::endl;
-    const float tolerance = 0.01f;
+    const float tolerance = 0.1f;
     return std::fabs(xCoef - yCoef) < tolerance;
 
 }
