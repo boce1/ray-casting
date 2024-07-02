@@ -112,6 +112,7 @@ void initizlizeRays(std::vector<line> &lineRays, unsigned int *linesCount, int *
     unsigned int rayLenght = 250;
     for(int i = 0; i < (*linesCount); i++)
     {
+        if((i * step) % 90 != 0)
         lineRays.push_back(line(*mouse_x, *mouse_y, (*mouse_x) + rayLenght * cos(i * step * PI / 180), (*mouse_y) + rayLenght * sin(i * step * PI / 180)));
     }
 }
