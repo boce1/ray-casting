@@ -51,10 +51,3 @@ line::isPointOnLine(int point_x, int point_y)
 
     return x_factor && y_factor;
 }
-
-
-line::isLongEnough(int point_x, int point_y)
-{
-    return std::fabs(vector_x_component) >= std::fabs(point_x - x1) && 
-            std::fabs(vector_y_component) >= std::fabs(point_y - y1);
-}

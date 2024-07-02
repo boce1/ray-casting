@@ -14,7 +14,6 @@ class line
         draw(SDL_Renderer* renderer);
         compare(const line &other);
         isPointOnLine(int point_x, int point_y);
-        isLongEnough(int point_x, int point_y);
 };
 
 #endif // LINE_H
