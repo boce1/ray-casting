@@ -32,19 +32,19 @@ line::isPointOnLine(int point_x, int point_y)
 {
     bool x_factor = false; 
     bool y_factor = false;
-    if(vector_x_component > 0 && x1 <= point_x && point_x <= x2)
+    if(vector_x_component >= 0 && x1 <= point_x && point_x <= x2)
     {
         x_factor = true;
     }
-    if(vector_x_component < 0 && x2 <= point_x && point_x <= x1)
+    if(vector_x_component <= 0 && x2 <= point_x && point_x <= x1)
     {
         x_factor = true;
     }
-    if(vector_y_component > 0 && y1 <= point_y && point_y <= y2)
+    if(vector_y_component >= 0 && y1 <= point_y && point_y <= y2)
     {
         y_factor = true;
     }
-    if(vector_y_component < 0 && y2 <= point_y && point_y <= y1)
+    if(vector_y_component <= 0 && y2 <= point_y && point_y <= y1)
     {
         y_factor = true;
     }
