@@ -18,7 +18,7 @@ bool areParallel(const line ray, const line wall);
 int main(int argc, char* argv[]) 
 {
     SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_Window *window = SDL_CreateWindow("Pendulum", 100, 100, WIDTH, HEIGHT, 0);
+    SDL_Window *window = SDL_CreateWindow("Ray tracing", 100, 100, WIDTH, HEIGHT, 0);
     if(window == NULL) 
     {
         return 1;
