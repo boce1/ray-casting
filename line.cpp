@@ -12,9 +12,9 @@ line::line(int x1_, int y1_, int x2_, int y2_)
     vector_y_component = y2 - y1; 
 }
 
-line::draw(SDL_Renderer* renderer)
+line::draw(SDL_Renderer* renderer, const SDL_Color &color)
 {
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
     SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
 }
 

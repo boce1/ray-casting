@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
 void initizlizeRays(std::vector<line> &lineRays, unsigned int *linesCount, int *mouse_x, int *mouse_y)
 {
     int step = 360 / (*linesCount);
-    unsigned int rayLenght = 250;
+    unsigned int rayLenght = 200;
     for(int i = 0; i < (*linesCount); i++)
     {
         if((i * step) % 90 != 0)
@@ -88,17 +88,28 @@ void initizlizeRays(std::vector<line> &lineRays, unsigned int *linesCount, int *
 
 void drawRays(SDL_Renderer* renderer, const std::vector<line> lineRays)
 {
+    SDL_Color rayColor;
+    rayColor.r = 255;
+    rayColor.g = 255;
+    rayColor.b = 100;
+    rayColor.a = 100;
+
     for(line l: lineRays)
     {
-        l.draw(renderer);
+        l.draw(renderer, rayColor);
     }
 }
 
 void drawWalls(SDL_Renderer* renderer, const std::vector<line> walls)
 {
+    SDL_Color wallColor;
+    wallColor.r = 255;
+    wallColor.g = 255;
+    wallColor.b = 255;
+    wallColor.a = 255;
     for(line l: walls)
     {
-        l.draw(renderer);
+        l.draw(renderer, wallColor);
     }
 }
 

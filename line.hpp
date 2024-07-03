@@ -11,7 +11,7 @@ class line
         int vector_y_component;    
 
         line(int x1_, int y1_, int x2_, int y2_);
-        draw(SDL_Renderer* renderer);
+        draw(SDL_Renderer* renderer, const SDL_Color &color);
         compare(const line &other);
         isPointOnLine(int point_x, int point_y);
 };
