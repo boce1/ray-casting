@@ -9,6 +9,7 @@
 const double PI = 3.14159;
 const int WIDTH = 1000;
 const int HEIGHT = 600;
+const unsigned int rayLenght = 200;
 
 void initizlizeRays(std::vector<line> &lineRays, unsigned int *linesCount, int *mouse_x, int *mouse_y);
 void drawRays(SDL_Renderer* renderer, const std::vector<line> lineRays);
@@ -78,10 +79,9 @@ int main(int argc, char* argv[])
 void initizlizeRays(std::vector<line> &lineRays, unsigned int *linesCount, int *mouse_x, int *mouse_y)
 {
     int step = 360 / (*linesCount);
-    unsigned int rayLenght = 200;
     for(int i = 0; i < (*linesCount); i++)
     {
-        if((i * step) % 90 != 0)
+        if((i * step) % 90 != 0) // n * 90, n being 1,2,3,... are buggy
         lineRays.push_back(line(*mouse_x, *mouse_y, (*mouse_x) + rayLenght * cos(i * step * PI / 180), (*mouse_y) + rayLenght * sin(i * step * PI / 180)));
     }
 }
@@ -130,16 +130,19 @@ void detectCollision(SDL_Renderer* renderer, std::vector<line> &lineRays, std::v
     float currentDistance = 0.0f;
     int min_x, min_y;
     bool isIntersected = false;
-    std::vector<line> removeRays; 
+    std::vector<line> removeRays;
+
     for(line ray : lineRays)
-    {
+    {    
         for(line wall : walls)
         {
+            // intersection formula
             t_w = (float)(wall.y2 * ray.vector_x_component - ray.y2 * ray.vector_x_component - wall.x2 * ray.vector_y_component + ray.x2 * ray.vector_y_component) /
                                 (float)(wall.vector_x_component * ray.vector_y_component - wall.vector_y_component * ray.vector_x_component);
             intersect_x = (int)(wall.x2 + t_w * wall.vector_x_component);
             intersect_y = (int)(wall.y2 + t_w * wall.vector_y_component);
             
+            // if point intersect i remvoe the old ray and add the new one
             currentDistance = (ray.x1 - intersect_x) * (ray.x1 - intersect_x) + (ray.y1 - intersect_y) * (ray.y1 - intersect_y);
             if(currentDistance < minDistance && wall.isPointOnLine(intersect_x, intersect_y) && ray.isPointOnLine(intersect_x, intersect_y))
             {
@@ -159,6 +162,8 @@ void detectCollision(SDL_Renderer* renderer, std::vector<line> &lineRays, std::v
         minDistance = std::numeric_limits<float>::max();
         currentDistance = 0.0f;
     }
+
+    // checking the remove list and then removing in the actual ray vector
     for(line removeRay : removeRays)
     {
         for(int i = 0; i < lineRays.size(); i++)
@@ -171,5 +176,4 @@ void detectCollision(SDL_Renderer* renderer, std::vector<line> &lineRays, std::v
         }
     }
     removeRays.clear();
-
 }
