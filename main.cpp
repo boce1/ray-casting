@@ -6,7 +6,7 @@
 #include <limits>
 #include "line.hpp"
 
-const double PI = 3.14159;
+const double PI = 3.14159265358979;
 const int WIDTH = 1000;
 const int HEIGHT = 600;
 const unsigned int rayLenght = 200;
@@ -81,7 +81,7 @@ void initizlizeRays(std::vector<line> &lineRays, unsigned int *linesCount, int *
     int step = 360 / (*linesCount);
     for(int i = 0; i < (*linesCount); i++)
     {
-        if((i * step) % 90 != 0) // n * 90, n being 1,2,3,... are buggy
+        //if((i * step) % 90 != 0) // n * 90, n being 1,2,3,... are buggy
         lineRays.push_back(line(*mouse_x, *mouse_y, (*mouse_x) + rayLenght * cos(i * step * PI / 180), (*mouse_y) + rayLenght * sin(i * step * PI / 180)));
     }
 }
@@ -131,6 +131,7 @@ void detectCollision(SDL_Renderer* renderer, std::vector<line> &lineRays, std::v
     int min_x, min_y;
     bool isIntersected = false;
     std::vector<line> removeRays;
+    int lineIndex = 0;
 
     for(line ray : lineRays)
     {    
@@ -139,11 +140,12 @@ void detectCollision(SDL_Renderer* renderer, std::vector<line> &lineRays, std::v
             // intersection formula
             t_w = (float)(wall.y2 * ray.vector_x_component - ray.y2 * ray.vector_x_component - wall.x2 * ray.vector_y_component + ray.x2 * ray.vector_y_component) /
                                 (float)(wall.vector_x_component * ray.vector_y_component - wall.vector_y_component * ray.vector_x_component);
-            intersect_x = (int)(wall.x2 + t_w * wall.vector_x_component);
-            intersect_y = (int)(wall.y2 + t_w * wall.vector_y_component);
+            intersect_x = std::ceil(wall.x2 + t_w * wall.vector_x_component);
+            intersect_y = std::ceil(wall.y2 + t_w * wall.vector_y_component);
             
             // if point intersect i remvoe the old ray and add the new one
             currentDistance = (ray.x1 - intersect_x) * (ray.x1 - intersect_x) + (ray.y1 - intersect_y) * (ray.y1 - intersect_y);
+
             if(currentDistance < minDistance && wall.isPointOnLine(intersect_x, intersect_y) && ray.isPointOnLine(intersect_x, intersect_y))
             {
                 minDistance = currentDistance;
@@ -156,11 +158,14 @@ void detectCollision(SDL_Renderer* renderer, std::vector<line> &lineRays, std::v
         if(isIntersected)
         {
             lineRays.push_back(line(ray.x1, ray.y1, min_x, min_y));
+            //lineRays.insert(lineRays.begin() + lineIndex, line(ray.x1, ray.y1, min_x, min_y));
             removeRays.push_back(ray);
         }
         isIntersected = false;
         minDistance = std::numeric_limits<float>::max();
         currentDistance = 0.0f;
+
+        lineIndex++;
     }
 
     // checking the remove list and then removing in the actual ray vector
